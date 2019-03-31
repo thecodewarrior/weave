@@ -30,10 +30,7 @@ import cuchaz.enigma.translation.mapping.serde.MappingFormat;
 import cuchaz.enigma.translation.mapping.serde.MappingsWriter;
 import cuchaz.enigma.translation.mapping.tree.EntryTree;
 import cuchaz.enigma.translation.mapping.tree.EntryTreeNode;
-import cuchaz.enigma.translation.representation.entry.ClassEntry;
-import cuchaz.enigma.translation.representation.entry.Entry;
-import cuchaz.enigma.translation.representation.entry.FieldEntry;
-import cuchaz.enigma.translation.representation.entry.MethodEntry;
+import cuchaz.enigma.translation.representation.entry.*;
 import net.fabricmc.weave.util.EnigmaUtils;
 import net.fabricmc.weave.util.Utils;
 
@@ -143,6 +140,8 @@ public class CommandTinyify extends Command {
                     writeLine(writer, EnigmaUtils.serializeEntry(entry, true, mapping.getTargetName()));
                 } else if (entry instanceof MethodEntry) {
                     writeLine(writer, EnigmaUtils.serializeEntry(entry, true, mapping.getTargetName()));
+                } else if (entry instanceof LocalVariableEntry) {
+                    writeLine(writer, EnigmaUtils.serializeEntry(entry, true, mapping.getTargetName()));
                 }
             }
 
@@ -160,6 +159,10 @@ public class CommandTinyify extends Command {
 
             node.getChildren().stream()
                     .filter(e -> e instanceof ClassEntry).sorted()
+                    .forEach(child -> writeEntry(writer, mappings, child));
+
+            node.getChildren().stream()
+                    .filter(e -> e instanceof LocalVariableEntry).sorted()
                     .forEach(child -> writeEntry(writer, mappings, child));
         }
 

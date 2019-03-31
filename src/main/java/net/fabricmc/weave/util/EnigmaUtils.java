@@ -18,10 +18,7 @@ package net.fabricmc.weave.util;
 
 import cuchaz.enigma.translation.representation.MethodDescriptor;
 import cuchaz.enigma.translation.representation.TypeDescriptor;
-import cuchaz.enigma.translation.representation.entry.ClassEntry;
-import cuchaz.enigma.translation.representation.entry.Entry;
-import cuchaz.enigma.translation.representation.entry.FieldEntry;
-import cuchaz.enigma.translation.representation.entry.MethodEntry;
+import cuchaz.enigma.translation.representation.entry.*;
 import net.fabricmc.weave.CommandFindMappingErrors;
 import net.fabricmc.weave.CommandTinyify;
 import net.fabricmc.weave.Main;
@@ -47,6 +44,19 @@ public class EnigmaUtils {
             data[1] = entry.getContainingClass().getFullName();
             data[2] = ((MethodEntry) entry).getDesc().toString();
             data[3] = entry.getName();
+
+            if (removeNone) {
+                data[1] = Utils.NONE_PREFIX_REMOVER.map(data[1]);
+                data[2] = Utils.NONE_PREFIX_REMOVER.mapMethodDesc(data[2]);
+            }
+        } else if (entry instanceof LocalVariableEntry) {
+            MethodEntry method = ((LocalVariableEntry) entry).getParent();
+            data = new String[5 + extraFields.length];
+            data[0] = "VARIABLE";
+            data[1] = method.getContainingClass().getFullName();
+            data[2] = method.getDesc().toString();
+            data[3] = method.getName();
+            data[4] = "" + ((LocalVariableEntry) entry).getIndex();
 
             if (removeNone) {
                 data[1] = Utils.NONE_PREFIX_REMOVER.map(data[1]);
